@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+@theme {
+  /* Custom colors from your design */
+  --color-primary: #b91c1c;
+  --color-sky: #60a5fa;
+  --color-accent: #4ade80;
+  --color-background: #faf7f2; /* warm off-white/cream */
+  --color-charcoal: #1f2937;
+
+  /* Custom font family */
+  --font-sans: "Inter", sans-serif;
+}
+
+/* Optional: Add any custom base styles */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply antialiased;
+  }
+}
