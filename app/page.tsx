@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -13,6 +13,8 @@ import {
   Sparkles,
   Hand,
   Radio,
+  Volume2,
+  VolumeX,
 } from "lucide-react";
 import { ImageWithFallback } from "@/components/ImageWithFallback";
 import Image from "next/image";
@@ -23,8 +25,9 @@ export default function HomePage() {
     isLive: boolean;
     liveVideoId: string | null;
   }>({ isLive: false, liveVideoId: null });
+  const [isMuted, setIsMuted] = useState(true);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
 
-  // Hero images array – place these in your public/images/ folder
   const heroImages = [
     "/images/hero1.jpg",
     "/images/hero2.jpg",
@@ -33,33 +36,52 @@ export default function HomePage() {
     "/images/hero5.jpg",
   ];
 
-  // Auto-rotate images every 5 seconds
+  // Auto-rotate images every 5 seconds (only if not live)
   useEffect(() => {
+    if (liveStatus.isLive) return;
     const interval = setInterval(() => {
       setCurrentImageIndex((prev) => (prev + 1) % heroImages.length);
     }, 5000);
     return () => clearInterval(interval);
-  }, [heroImages.length]);
+  }, [heroImages.length, liveStatus.isLive]);
 
-  // Fetch live status every 2 minutes using the server endpoint
+  // Fetch live status every 2 minutes
   useEffect(() => {
     const checkLiveStatus = async () => {
       try {
-        const res = await fetch('/api/live-status');
+        const res = await fetch("/api/live-status");
         const data = await res.json();
         setLiveStatus({
           isLive: data.isLive || false,
           liveVideoId: data.liveVideoId || null,
         });
       } catch (error) {
-        console.error('Failed to fetch live status:', error);
+        console.error("Failed to fetch live status:", error);
       }
     };
 
     checkLiveStatus();
-    const interval = setInterval(checkLiveStatus, 120000); // 2 minutes
+    const interval = setInterval(checkLiveStatus, 120000);
     return () => clearInterval(interval);
   }, []);
+
+  // Handle mute/unmute for live iframe
+  const toggleMute = () => {
+    if (!iframeRef.current) return;
+
+    const iframe = iframeRef.current;
+    const currentSrc = iframe.src;
+
+    if (isMuted) {
+      // Unmute
+      iframe.src = currentSrc.replace("mute=1", "mute=0");
+      setIsMuted(false);
+    } else {
+      // Mute
+      iframe.src = currentSrc.replace("mute=0", "mute=1");
+      setIsMuted(true);
+    }
+  };
 
   const ministries = [
     {
@@ -92,93 +114,90 @@ export default function HomePage() {
     },
   ];
 
-  // Determine button behaviour based on live status
-  const liveButtonHref = liveStatus.isLive && liveStatus.liveVideoId
-    ? `https://www.youtube.com/embed/${liveStatus.liveVideoId}?autoplay=1`
-    : "/sermons";
-
-  const liveButtonText = liveStatus.isLive ? "WE ARE LIVE NOW" : "Watch Live Sermons";
-  const LiveIcon = liveStatus.isLive ? Radio : PlayCircle;
+  const scheduleEvents = [
+    {
+      title: "Sunday Main Service",
+      day: "Sunday",
+      time: "9:30 AM - 2:00 PM",
+      color: "from-yellow-500 to-orange-500",
+    },
+    {
+      title: "Lunch Hour Service",
+      day: "Monday - Friday",
+      time: "12:45 PM - 1:45 PM",
+      color: "from-blue-500 to-cyan-500",
+    },
+    {
+      title: "Take It By Force Prayer",
+      day: "Tuesday",
+      time: "5:30 PM - 7:30 PM",
+      color: "from-red-500 to-pink-500",
+    },
+    {
+      title: "Restoration Communion Power Table",
+      day: "Thursday",
+      time: "5:30 PM - 7:30 PM",
+      color: "from-purple-500 to-indigo-500",
+    },
+  ];
 
   return (
     <div className="min-h-screen pt-20">
       {/* Hero Section */}
-      <section className="relative h-screen flex items-center justify-center overflow-hidden">
-        {/* Background Images with Crossfade */}
-        <div className="absolute inset-0 z-0">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentImageIndex}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 1.5, ease: "easeInOut" }}
-              className="absolute inset-0"
-            >
-              <Image
-                src={heroImages[currentImageIndex]}
-                alt={`Hero background ${currentImageIndex + 1}`}
-                fill
-                className="object-cover"
-                priority
-              />
-            </motion.div>
-          </AnimatePresence>
-          <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-red-950/50 to-blue-950/70" />
+      <section className="relative h-screen overflow-hidden flex items-center justify-center">
+        {/* Background container */}
+        <div className="absolute inset-0 w-full h-full z-0">
+          {!liveStatus.isLive ? (
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentImageIndex}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 1.5, ease: "easeInOut" }}
+                className="absolute inset-0 w-full h-full"
+              >
+                <Image
+                  src={heroImages[currentImageIndex]}
+                  alt={`Hero background ${currentImageIndex + 1}`}
+                  fill
+                  className="object-cover"
+                  priority
+                />
+              </motion.div>
+            </AnimatePresence>
+          ) : (
+            /* ==================== LIVE STREAM CONTAINER - FIXED ==================== */
+            <div className="absolute inset-0 w-full h-full bg-black">
+              {liveStatus.liveVideoId && (
+                <iframe
+                  key={liveStatus.liveVideoId}
+                  ref={iframeRef}
+                  src={`https://www.youtube-nocookie.com/embed/${liveStatus.liveVideoId}?autoplay=1&mute=1&controls=1&modestbranding=1&rel=0&iv_load_policy=3&fs=1&playsinline=1`}
+                  title="Live Stream"
+                  className="absolute inset-0 w-full h-full"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                />
+              )}
+            </div>
+          )}
+
+          {/* Overlay gradient */}
+          <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-red-950/40 to-blue-950/60" />
         </div>
 
-        {/* Floating Elements */}
-        <motion.div
-          animate={{ y: [0, -20, 0] }}
-          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-1/4 left-10 opacity-20"
-        >
-          <Image
-            src="/images/churchlogo1.png"
-            alt="Kingdom Restoration Church logo"
-            width={96}
-            height={96}
-            className="w-24 h-24 object-contain"
-          />
-        </motion.div>
-
-        <motion.div
-          animate={{ y: [0, 20, 0] }}
-          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute bottom-1/4 right-10 opacity-20"
-        >
-          <Image
-            src="/images/churchlogo1.png"
-            alt="Kingdom Restoration Church logo"
-            width={128}
-            height={128}
-            className="w-32 h-32 object-contain"
-          />
-        </motion.div>
-
-        {/* Content */}
+        {/* Hero Content */}
         <div className="relative z-10 max-w-5xl mx-auto px-4 text-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1 }}
           >
-            <div className="mb-6">
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
-                className="inline-block px-6 py-2 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-full text-sm font-medium mb-4 shadow-lg shadow-red-700/50"
-              >
-                My Year Of Deliverance – Obadiah 1:17
-              </motion.div>
-            </div>
-
-            {/* Main heading with drop shadow */}
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight drop-shadow-[0_4px_8px_rgba(0,0,0,0.8)]">
               WELCOME TO
               <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-blue-300 to-green-300 drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">
+              <span className="text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">
                 KINGDOM RESTORATION CHURCH
               </span>
             </h1>
@@ -187,37 +206,27 @@ export default function HomePage() {
               Restoration Embassy Kisumu
             </p>
 
-            <p className="text-lg sm:text-xl text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed">
-              Discover Community • Ignite Your Faith • Step into Your Year of Deliverance
-            </p>
-
             <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-              {/* Live / Sermons Button */}
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                {liveStatus.isLive ? (
-                  <a
-                    href={liveButtonHref}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group px-8 py-4 bg-red-600 text-white rounded-full hover:bg-red-700 transition-all shadow-lg shadow-red-600/50 hover:shadow-xl animate-pulse flex items-center gap-3 font-medium"
-                  >
-                    <LiveIcon className="w-6 h-6" />
-                    {liveButtonText}
-                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                  </a>
-                ) : (
-                  <Link
-                    href={liveButtonHref}
-                    className="group px-8 py-4 bg-red-700 text-white rounded-full hover:bg-red-800 transition-all shadow-lg shadow-red-700/50 hover:shadow-xl hover:shadow-red-700/60 flex items-center gap-3 font-medium"
-                  >
-                    <LiveIcon className="w-6 h-6" />
-                    {liveButtonText}
-                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                  </Link>
-                )}
+                <Link
+                  href="/sermons"
+                  className="group px-8 py-4 bg-red-600 text-white rounded-full hover:bg-red-700 transition-all shadow-lg shadow-red-600/50 hover:shadow-xl flex items-center gap-3 font-medium"
+                >
+                  {liveStatus.isLive ? (
+                    <>
+                      <Radio className="w-6 h-6 animate-pulse" />
+                      WE ARE LIVE NOW
+                    </>
+                  ) : (
+                    <>
+                      <PlayCircle className="w-6 h-6" />
+                      Watch Live Sermons
+                    </>
+                  )}
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </Link>
               </motion.div>
 
-              {/* Give Now Button */}
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -242,16 +251,37 @@ export default function HomePage() {
           </motion.div>
         </div>
 
-        {/* Scroll Indicator */}
-        <motion.div
-          animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
-          className="absolute bottom-10 left-1/2 -translate-x-1/2"
-        >
-          <div className="w-6 h-10 border-2 border-white/50 rounded-full flex items-start justify-center p-2">
-            <div className="w-1.5 h-1.5 bg-white rounded-full" />
+        {/* Mute / Unmute Button - Only show when live */}
+        {liveStatus.isLive && (
+          <motion.button
+            onClick={toggleMute}
+            className="absolute bottom-8 right-8 z-20 bg-black/60 hover:bg-black/80 backdrop-blur-sm text-white p-4 rounded-full transition-all"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            {isMuted ? <VolumeX className="w-7 h-7" /> : <Volume2 className="w-7 h-7" />}
+          </motion.button>
+        )}
+
+        {/* Year of Deliverance */}
+        <div className="absolute bottom-6 left-0 right-0 text-center z-10">
+          <div className="inline-block px-4 py-1 bg-black/50 backdrop-blur-sm rounded-full text-sm text-white">
+            ✨ My Year Of Deliverance – Obadiah 1:17 ✨
           </div>
-        </motion.div>
+        </div>
+
+        {/* Scroll Indicator - Hide when live */}
+        {!liveStatus.isLive && (
+          <motion.div
+            animate={{ y: [0, 10, 0] }}
+            transition={{ duration: 2, repeat: Infinity }}
+            className="absolute bottom-10 left-1/2 -translate-x-1/2 z-10"
+          >
+            <div className="w-6 h-10 border-2 border-white/50 rounded-full flex items-start justify-center p-2">
+              <div className="w-1.5 h-1.5 bg-white rounded-full" />
+            </div>
+          </motion.div>
+        )}
       </section>
 
       {/* Welcome Section */}
@@ -363,34 +393,12 @@ export default function HomePage() {
           >
             <h2 className="text-4xl sm:text-5xl font-bold mb-6">Join Us This Week</h2>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              Experience the power of corporate worship and fellowship
+              Experience the power of worship and fellowship
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              {
-                title: "Morning Glory Service",
-                day: "Sunday",
-                time: "7:00 AM - 9:00 AM",
-                description: "Start your week with powerful worship and the Word",
-                color: "from-yellow-500 to-orange-500",
-              },
-              {
-                title: "Lunch Hour Service",
-                day: "Wednesday",
-                time: "12:00 PM - 2:00 PM",
-                description: "Midweek refreshing and spiritual renewal",
-                color: "from-blue-500 to-cyan-500",
-              },
-              {
-                title: "Take It By Force Prayer",
-                day: "Friday",
-                time: "7:00 PM - 9:00 PM",
-                description: "Intense prayer and spiritual warfare",
-                color: "from-red-500 to-pink-500",
-              },
-            ].map((event, index) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {scheduleEvents.map((event, index) => (
               <motion.div
                 key={event.title}
                 initial={{ opacity: 0, y: 30 }}
@@ -398,19 +406,18 @@ export default function HomePage() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 whileHover={{ y: -5 }}
-                className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20 hover:bg-white/15 transition-all cursor-pointer group"
+                className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all cursor-pointer flex flex-col h-full"
               >
                 <div
-                  className={`inline-block px-4 py-2 bg-gradient-to-r ${event.color} text-white rounded-full text-sm font-medium mb-4`}
+                  className={`inline-block w-fit px-4 py-2 bg-gradient-to-r ${event.color} text-white rounded-full text-sm font-medium mb-4`}
                 >
                   {event.day}
                 </div>
-                <h3 className="text-2xl font-semibold mb-3">{event.title}</h3>
-                <p className="text-blue-300 mb-4 flex items-center gap-2">
+                <h3 className="text-xl font-semibold mb-3 flex-grow">{event.title}</h3>
+                <p className="text-blue-300 flex items-center gap-2 text-sm">
                   <Calendar className="w-5 h-5" />
                   {event.time}
                 </p>
-                <p className="text-gray-300">{event.description}</p>
               </motion.div>
             ))}
           </div>

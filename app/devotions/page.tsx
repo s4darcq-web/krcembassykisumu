@@ -244,7 +244,7 @@ export default function DevotionsPage() {
             <div className="inline-block px-6 py-2 bg-red-600 rounded-full text-sm font-medium mb-6">Daily Devotions</div>
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-6">
               Feed Your{" "}
-              <span className="text-transparent bg-clip-text bg-linear-to-r from-green-400 to-blue-400">Spirit Daily</span>
+              <span className="text-transparent bg-clip-text bg-linear-to-r from-gray-200 to-gray-200">Spirit Daily</span>
             </h1>
             <p className="text-xl sm:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
               Start each day with powerful insights from God's Word

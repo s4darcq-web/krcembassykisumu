@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useState } from "react";
 import {
   Heart,
   CreditCard,
@@ -10,9 +11,18 @@ import {
   TrendingUp,
   Users,
   Home,
+  Copy,
+  Check,
 } from "lucide-react";
 
 export default function GivingPage() {
+  const [copiedValue, setCopiedValue] = useState<string | null>(null);
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedValue(text);
+    setTimeout(() => setCopiedValue(null), 2000);
+  };
   const campaigns = [
     {
       title: "Church Land Fundraising",
@@ -38,43 +48,33 @@ export default function GivingPage() {
     {
       icon: Smartphone,
       title: "M-Pesa",
-      subtitle: "Mobile Money",
-      steps: [
-        "Go to M-Pesa menu",
-        "Select Lipa Na M-Pesa",
-        "Select Pay Bill",
-        "Enter Business Number: 247247",
-        "Enter Account: KRC GIVING",
-        "Enter Amount",
-        "Enter M-Pesa PIN",
+      subtitle: "Lipa Na M-Pesa",
+      details: [
+        { label: "Till Number", value: "683935" },
+        { label: "Business Name", value: "RESTORE LIFE" },
       ],
       color: "from-green-600 to-emerald-600",
     },
     {
-      icon: Building2,
-      title: "Bank Transfer",
-      subtitle: "Direct Deposit",
-      steps: [
-        "Bank: KCB Bank Kenya",
-        "Account Name: Kingdom Restoration Church",
-        "Account Number: 1234567890",
-        "Branch: Kisumu",
-        "Swift Code: KCBLKENX",
+      icon: CreditCard,
+      title: "Paybill",
+      subtitle: "Tithes & Offering",
+      details: [
+        { label: "Paybill Number", value: "880100" },
+        { label: "Account Number", value: "PAYREST12" },
       ],
-      color: "from-blue-600 to-indigo-600",
+      color: "from-yellow-600 to-amber-600",
     },
     {
-      icon: CreditCard,
-      title: "Online Giving",
-      subtitle: "Card Payment",
-      steps: [
-        'Click "Give Online" button below',
-        "Enter your details",
-        "Choose giving type (Tithe/Offering/Special)",
-        "Enter amount",
-        "Complete payment securely",
+      icon: Building2,
+      title: "Bank Transfer",
+      subtitle: "NCBA Bank – Kisumu 2",
+      details: [
+        { label: "Account Number", value: "2020830017" },
+        { label: "Swift Code", value: "CBAFKENX" },
+        { label: "Bank", value: "NCBA BANK – KISUMU 2" },
       ],
-      color: "from-purple-600 to-pink-600",
+      color: "from-blue-600 to-indigo-600",
     },
   ];
 
@@ -104,15 +104,15 @@ export default function GivingPage() {
             </div>
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-6">
               Sow Into{" "}
-              <span className="text-transparent bg-clip-text bg-linear-to-r from-green-400 to-blue-400">
+              <span className="text-transparent bg-clip-text bg-linear-to-r from-gray-200 to-gray-200">
                 Kingdom Advancement
               </span>
             </h1>
             <p className="text-xl sm:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed mb-8">
-              Your generosity enables us to reach more souls, transform lives, and advance God's Kingdom
+              Your generosity enables us to reach more souls, transform lives, and advance God&apos;s Kingdom
             </p>
             <p className="text-lg text-blue-300 italic">
-              "Give, and it will be given to you. A good measure, pressed down, shaken together and running over." -
+              &quot;Give, and it will be given to you. A good measure, pressed down, shaken together and running over.&quot; -
               Luke 6:38
             </p>
           </motion.div>
@@ -157,7 +157,7 @@ export default function GivingPage() {
               Active Fundraising Campaigns
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Join us in building God's Kingdom through these special projects
+              Join us in building God&apos;s Kingdom through these special projects
             </p>
           </motion.div>
 
@@ -249,15 +249,31 @@ export default function GivingPage() {
                 </div>
 
                 <h3 className="text-2xl font-semibold text-gray-900 mb-2">{method.title}</h3>
-                <p className="text-gray-600 mb-6">{method.subtitle}</p>
+                <p className="text-gray-600 mb-6 font-medium">{method.subtitle}</p>
 
-                <div className="space-y-3">
-                  {method.steps.map((step, stepIndex) => (
-                    <div key={stepIndex} className="flex items-start gap-3 text-gray-700">
-                      <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center text-xs font-semibold text-gray-600 shrink-0 mt-0.5">
-                        {stepIndex + 1}
+                <div className="space-y-4">
+                  {method.details.map((detail, detailIndex) => (
+                    <div
+                      key={detailIndex}
+                      className="bg-white rounded-xl p-4 border-2 border-gray-200 hover:border-gray-300 transition-all"
+                    >
+                      <p className="text-xs font-semibold text-gray-500 uppercase mb-2">{detail.label}</p>
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="text-gray-900 font-mono text-lg break-all">
+                          {detail.value}
+                        </p>
+                        <button
+                          onClick={() => copyToClipboard(detail.value)}
+                          className="shrink-0 p-2 hover:bg-gray-100 rounded-lg transition-all text-gray-500 hover:text-gray-700"
+                          title="Copy to clipboard"
+                        >
+                          {copiedValue === detail.value ? (
+                            <Check className="w-5 h-5 text-green-600" />
+                          ) : (
+                            <Copy className="w-5 h-5" />
+                          )}
+                        </button>
                       </div>
-                      <span className="text-sm leading-relaxed">{step}</span>
                     </div>
                   ))}
                 </div>
@@ -279,8 +295,7 @@ export default function GivingPage() {
             <Heart className="w-20 h-20 text-red-400 mx-auto mb-6" />
             <h2 className="text-4xl sm:text-5xl font-bold mb-6">Ready to Make an Impact?</h2>
             <p className="text-xl text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed">
-              Your seed is not just a financial contribution—it's a partnership in advancing God's Kingdom and
-              transforming lives.
+             Your seed is not only an offering of your money but also joining hands with us to further the Kingdom of God.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
               <motion.button
@@ -302,38 +317,18 @@ export default function GivingPage() {
         </div>
       </section>
 
-      {/* Tax & Legal Info */}
-      <section className="py-16 bg-gray-50 border-t border-gray-200">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="bg-white rounded-2xl p-8 shadow-lg"
-          >
-            <h3 className="text-2xl font-semibold text-gray-900 mb-6">Important Information</h3>
-            <div className="space-y-4 text-gray-600 leading-relaxed">
-              <p>
-                <strong className="text-gray-900">Security:</strong> All online transactions are encrypted and secure.
-                We never store your payment information.
-              </p>
-              <p>
-                <strong className="text-gray-900">Receipts:</strong> You will receive a confirmation receipt via SMS or
-                email after each transaction for your records.
-              </p>
-              <p>
-                <strong className="text-gray-900">Questions?</strong> Contact our finance team at +254 701 939 216 or
-                email finance@krc-kisumu.org for any giving-related inquiries.
-              </p>
-              <p className="text-sm text-gray-500 pt-4 border-t border-gray-200">
-                Kingdom Restoration Church is a registered religious organization in Kenya. All contributions are used
-                for ministry purposes as outlined in our mission and vision.
-              </p>
-            </div>
-          </motion.div>
-        </div>
-      </section>
+      {/* Toast Notification */}
+      {copiedValue && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 20 }}
+          className="fixed bottom-8 right-8 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-2 z-50"
+        >
+          <Check className="w-5 h-5" />
+          <span className="font-medium">Copied to clipboard!</span>
+        </motion.div>
+      )}
     </div>
   );
 }

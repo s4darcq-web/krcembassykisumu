@@ -9,7 +9,7 @@ export default function HeroSection() {
         <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
           <div className="inline-block px-6 py-2 bg-red-600 rounded-full text-sm font-medium mb-6">Sacred Teachings</div>
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-6">
-            Watch <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-blue-400">Powerful Sermons</span>
+            Watch <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-200 to-gray-200">Powerful Sermons</span>
           </h1>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
             Life-changing messages from Apostle Amos Ligawa and the KRC family

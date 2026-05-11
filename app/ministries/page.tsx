@@ -97,11 +97,11 @@ export default function MinistriesPage() {
     },
     {
       icon: HandHeart,
-      title: "Community Outreach",
+      title: "Community  Evangelism",
       description:
         "Demonstrating the love of Christ through practical service to our community. Feeding the hungry, clothing the needy, and bringing hope to the hurting.",
-      image: "/images/communityoutreach.jpg",
-      alt: "Community Outreach",
+      image: "/images/communityevangelism.jpg",
+      alt: "Community Evangelism",
       color: "from-teal-500 to-green-500",
       bgColor: "bg-teal-50",
       textColor: "text-teal-600",
@@ -116,6 +116,17 @@ export default function MinistriesPage() {
       color: "from-violet-500 to-purple-500",
       bgColor: "bg-violet-50",
       textColor: "text-violet-600",
+    },
+    {
+      icon: Users,
+      title: "Protocol Ministry",
+      description:
+        "Ensuring smooth operations and warm hospitality during church services and events. We coordinate logistics, welcome visitors, and create a welcoming atmosphere for all.",
+      image: "/images/protocol.jpeg",
+      alt: "Protocol Ministry",
+      color: "from-yellow-500 to-amber-500",
+      bgColor: "bg-yellow-50",
+      textColor: "text-yellow-600",
     },
   ];
 
@@ -138,7 +149,7 @@ export default function MinistriesPage() {
             </div>
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-6">
               Find Your{" "}
-              <span className="text-transparent bg-clip-text bg-linear-to-r from-red-400 to-blue-400">
+              <span className="text-transparent bg-clip-text bg-linear-to-r from-gray-200 to-gray-200">
                 Place to Serve
               </span>
             </h1>
@@ -227,7 +238,7 @@ export default function MinistriesPage() {
               Ready to Get Involved?
             </h2>
             <p className="text-xl text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed">
-              Don't just attend church—be the church! Join a ministry and discover the joy of serving in God's Kingdom.
+            Join a ministry at the church. Find out how good it feels to serve Gods Kingdom. Serving in Gods Kingdom is a great thing to do. The church needs people to join a ministry and help out. Gods Kingdom is where we serve. This is what the church is all, about.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
               <a

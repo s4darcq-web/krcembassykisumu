@@ -5,10 +5,10 @@ import HeroSection from "../components/HeroSection";
 export default function SermonsPage() {
   return (
     <div className="min-h-screen pt-20 bg-gradient-to-br from-gray-50 to-blue-50">
-      {/* Hero */}
+      {/* Hero - unchanged */}
       <HeroSection />
 
-      {/* Sermons Carousel */}
+      {/* Sermons Grid */}
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-6">
           <Suspense fallback={<div className="text-center py-12">Loading sermons...</div>}>

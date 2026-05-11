@@ -7,14 +7,11 @@ import { ImageWithFallback } from "@/components/ImageWithFallback";
 export default function EventsPage() {
   const upcomingEvents = [
     {
-      title: "Sunday Morning Glory Service",
-      date: "March 16, 2026",
-      time: "7:00 AM - 9:00 AM",
+      title: "Sunday Main Service",
+      date: "May 3, 2026",
+      time: "9:30 AM - 2:00 PM",
       location: "Ofafa Hall, Kisumu",
-      description:
-        "Join us for powerful worship, life-changing Word, and the manifest presence of God.",
-      image:
-        "https://images.unsplash.com/photo-1737045597777-059fbc5a8e3f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxhZnJpY2FuJTIwd29yc2hpcCUyMGhhbmRzJTIwcmFpc2VkJTIwY2h1cmNoJTIwY29uZ3JlZ2F0aW9ufGVufDF8fHx8MTc3MzU1Mzk5Mnww&ixlib=rb-4.1.0&q=80&w=1080",
+      image:"images/mainservice.jpg",
       type: "Weekly Service",
       color: "from-yellow-500 to-orange-500",
       recurring: true,
@@ -45,8 +42,8 @@ export default function EventsPage() {
     },
     {
       title: "Take It By Force Prayer",
-      date: "March 21, 2026",
-      time: "7:00 PM - 9:00 PM",
+      date: "May 6, 2026",
+      time: "5:30 PM - 7:30 PM",
       location: "Ofafa Hall, Kisumu",
       description: "Intense prayer session for breakthrough, deliverance, and spiritual warfare.",
       image:
@@ -69,8 +66,8 @@ export default function EventsPage() {
     },
     {
       title: "Lunch Hour Service",
-      date: "March 19, 2026",
-      time: "12:00 PM - 2:00 PM",
+      date: "May 5, 2026",
+      time: "12:45 PM - 1:45 PM",
       location: "Ofafa Hall, Kisumu",
       description:
         "Midweek spiritual refreshing with worship, Word, and prayer for busy professionals.",
@@ -101,7 +98,7 @@ export default function EventsPage() {
             </div>
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-6">
               Experience{" "}
-              <span className="text-transparent bg-clip-text bg-linear-to-r from-red-400 to-blue-400">
+              <span className="text-transparent bg-clip-text bg-linear-to-r from-gray-200 to-gray-200">
                 God Together
               </span>
             </h1>
@@ -115,25 +112,31 @@ export default function EventsPage() {
       {/* Service Times Highlight */}
       <section className="py-16 bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 items-stretch">
             {[
               {
-                title: "Sunday Service",
-                subtitle: "Morning Glory",
-                time: "7:00 AM - 9:00 AM",
+                title: "Sunday Main Service",
+                subtitle: "Sunday",
+                time: "9:30 AM - 2:00 PM",
                 color: "from-yellow-500 to-orange-500",
               },
               {
-                title: "Wednesday Service",
-                subtitle: "Lunch Hour",
-                time: "12:00 PM - 2:00 PM",
+                title: "Lunch Hour Service",
+                subtitle: "Monday - Friday",
+                time: "12:45 PM - 1:45 PM",
                 color: "from-blue-500 to-cyan-500",
               },
               {
-                title: "Friday Service",
-                subtitle: "Take It By Force",
-                time: "7:00 PM - 9:00 PM",
+                title: "Take It By Force Prayer",
+                subtitle: "Tuesday",
+                time: "5:30 PM - 7:30 PM",
                 color: "from-red-500 to-pink-500",
+              },
+              {
+                title: "Restoration Communion Power Table",
+                subtitle: "Thursday",
+                time: "5:30 PM - 7:30 PM",
+                color: "from-purple-500 to-indigo-500",
               },
             ].map((service, index) => (
               <motion.div
@@ -142,15 +145,15 @@ export default function EventsPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="text-center"
+                className="text-center h-full flex flex-col justify-between"
               >
                 <div
-                  className={`inline-block px-6 py-3 bg-linear-to-r ${service.color} text-white rounded-2xl shadow-lg mb-4`}
+                  className={`block px-6 py-3 bg-linear-to-r ${service.color} text-white rounded-2xl shadow-lg mb-4 w-full`}
                 >
                   <div className="font-semibold text-lg">{service.title}</div>
                   <div className="text-sm opacity-90">{service.subtitle}</div>
                 </div>
-                <p className="text-gray-600 flex items-center justify-center gap-2">
+                <p className="text-gray-600 flex items-center justify-center gap-2 mt-auto">
                   <Clock className="w-5 h-5" />
                   {service.time}
                 </p>
@@ -190,7 +193,7 @@ export default function EventsPage() {
                 className="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all group cursor-pointer"
               >
                 {/* Image */}
-                <div className="relative h-64 overflow-hidden bg-gray-900">
+                <div className="relative h-96 overflow-hidden bg-gray-900">
                   <ImageWithFallback
                     src={event.image}
                     alt={event.title}
@@ -238,8 +241,6 @@ export default function EventsPage() {
                     </div>
                   </div>
 
-                  <p className="text-gray-600 leading-relaxed mb-6">{event.description}</p>
-
                   <button className="inline-flex items-center gap-2 text-red-700 font-medium hover:gap-3 transition-all group/btn">
                     Learn More
                     <ArrowRight className="w-5 h-5" />
@@ -261,7 +262,7 @@ export default function EventsPage() {
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
             >
-              <h2 className="text-4xl sm:text-5xl font-bold mb-6">Can't Make It In Person?</h2>
+              <h2 className="text-4xl sm:text-5xl font-bold mb-6">Can&apos;t Make It In Person?</h2>
               <p className="text-xl text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed">
                 Join us online! All our services are live-streamed on YouTube and Facebook
               </p>
@@ -324,7 +325,7 @@ export default function EventsPage() {
                   <div>
                     <h4 className="font-semibold text-gray-900 mb-1">First Time Visitors</h4>
                     <p className="text-gray-600">
-                      Look for our welcome team at the entrance. We'll help you get settled!
+                      Look for our welcome team at the entrance. We&apos;ll help you get settled!
                     </p>
                   </div>
                 </div>

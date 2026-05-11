@@ -31,15 +31,14 @@ export default function AboutPage() {
   ];
 
   const pastors = [
-    { name: "Bernadette Nafula", role: "Lead Pastor - Busia Branch", image: "/images/pstbernadette.jpg" },
-    { name: "Kevin Ager", role: "Lead Pastor - Nakuru Branch", image: "/images/pstkevin.jpg" },
+    { name: "Bernadette Nafula", role: "Lead Pastor - Busia", image: "/images/pstbernadette.jpg" },
+    { name: "Kevin Ager", role: "Lead Pastor - Nakuru", image: "/images/pstkevin.jpg" },
     { name: "Bernard Omondi", role: "Pastor Kisumu", image: "/images/pstbenard.jpg" },
     { name: "Dickson Musau", role: "Pastor Kisumu", image: "/images/pst-dickson.jpg" },
-    { name: "Dominic Mukalo", role: "Pastor kisumu", image: "/images/pst-dominic.jpg" },
-    { name: "Joseph Olao", role: "Pastor kisumu", image: "/images/joseph-olao.png" },
+    { name: "Dominic Mukalo", role: "Pastor Kisumu", image: "/images/pst-dominic.jpg" },
+    { name: "Joseph Olao", role: "Pastor Kisumu", image: "/images/joseph-olao.png" },
     { name: "David Arao", role: "Pastor Kisumu", image: "/images/david-arao.jpg" },
-    { name: "Bethlyne Ligawa", role: "Prophetess Kisumu", image: "/images/min-bethlyne.jpg" },
-    { name: "Min. Sally", role: "Minister kisumu", image: "/images/min-sally.jpg" },
+    { name: "Bethlyne Ligawa", role: "Prophetess", image: "/images/min-bethlyne.jpg" },
   ];
 
   return (
@@ -60,7 +59,7 @@ export default function AboutPage() {
             </div>
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-6">
               Our Story of{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-blue-400">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-200 to-gray-200">
                 Restoration
               </span>
             </h1>
@@ -154,13 +153,6 @@ export default function AboutPage() {
                 opportunities and community outreach programs to meet the diverse needs of our congregation and
                 the wider community.
               </p>
-              <Link
-                href="/about/history" // you can adjust this link
-                className="inline-flex items-center gap-2 px-6 py-3 bg-red-700 text-white rounded-full hover:bg-red-800 transition-all shadow-lg hover:shadow-xl group"
-              >
-                Learn More
-                <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </Link>
             </motion.div>
 
             <motion.div
@@ -233,10 +225,10 @@ export default function AboutPage() {
 
                 <div className="flex-1 text-center md:text-left">
                   <h3 className="text-3xl font-bold text-gray-900 mb-2">Apostle Amos Ligawa</h3>
-                  <p className="text-xl text-red-600 mb-6 font-medium">Senior Pastor & Founder</p>
+                  <p className="text-xl text-red-600 mb-6 font-medium">General Overseer & Founder</p>
                   <p className="text-lg text-gray-700 leading-relaxed mb-4">
                     Called by God to raise a generation of Kingdom ambassadors, Apostle Amos Ligawa is a seasoned
-                    preacher, teacher, and prophet with a passion for souls and the manifest glory of God.
+                    preacher, teacher, and prophet of God with a passion for souls and the manifest glory and spirit of God.
                   </p>
                   <p className="text-lg text-gray-700 leading-relaxed">
                     His ministry is marked by powerful demonstrations of the Spirit, supernatural breakthroughs,
@@ -260,8 +252,8 @@ export default function AboutPage() {
             className="text-center mb-16"
           >
             <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">Our Pastors</h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Get Acquainted with Our Clergy Team
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">     
+              Our dedicated team of pastors, committed to shepherding and empowering our congregation                                     
             </p>
           </motion.div>
 
