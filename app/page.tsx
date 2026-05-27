@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { ImageWithFallback } from "@/components/ImageWithFallback";
 import Image from "next/image";
+import SermonsPreviewClient from "./components/SermonsPreviewClient";
 
 export default function HomePage() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -118,12 +119,12 @@ export default function HomePage() {
     {
       title: "Sunday Main Service",
       day: "Sunday",
-      time: "9:30 AM - 2:00 PM",
+      time: "9:00 AM - 2:00 PM",
       color: "from-yellow-500 to-orange-500",
     },
     {
       title: "Lunch Hour Service",
-      day: "Monday - Friday",
+      day: "Daily",
       time: "12:45 PM - 1:45 PM",
       color: "from-blue-500 to-cyan-500",
     },
@@ -329,6 +330,9 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Sermons Preview (first 3 sermons) */}
+      <SermonsPreviewClient />
 
       {/* Featured Image Section */}
       <section className="py-20 bg-white">

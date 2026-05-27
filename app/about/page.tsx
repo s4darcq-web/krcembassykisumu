@@ -36,7 +36,7 @@ export default function AboutPage() {
     { name: "Bernard Omondi", role: "Pastor Kisumu", image: "/images/pstbenard.jpg" },
     { name: "Dickson Musau", role: "Pastor Kisumu", image: "/images/pst-dickson.jpg" },
     { name: "Dominic Mukalo", role: "Pastor Kisumu", image: "/images/pst-dominic.jpg" },
-    { name: "Joseph Olao", role: "Pastor Kisumu", image: "/images/joseph-olao.png" },
+    { name: "Joseph Olawo", role: "Pastor Kisumu", image: "/images/joseph-olao.png" },
     { name: "David Arao", role: "Pastor Kisumu", image: "/images/david-arao.jpg" },
     { name: "Bethlyne Ligawa", role: "Prophetess", image: "/images/min-bethlyne.jpg" },
   ];

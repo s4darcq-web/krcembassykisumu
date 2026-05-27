@@ -36,9 +36,9 @@ export default function GivingPage() {
     {
       title: "Ofafa Hall Renovation",
       description: "Improving our current facility for better worship experience",
-      goal: 5000000,
-      raised: 3500000,
-      percentage: 70,
+      goal: 600000,
+      raised: 200000,
+      percentage: 33,
       icon: Building2,
       color: "from-blue-500 to-cyan-500",
     },

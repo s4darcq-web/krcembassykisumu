@@ -67,19 +67,19 @@ export function Footer() {
             <h3 className="font-semibold text-lg mb-4">Service Times</h3>
             <ul className="space-y-2 text-sm text-gray-300">
               <li>
-                <span className="text-blue-400 font-medium">Morning Glory:</span>
+                <span className="text-blue-400 font-medium">Sunday Main Service:</span>
                 <br />
-                Sun 7:00 AM - 9:00 AM
+                Sun 9:00 AM - 2:00 PM
               </li>
               <li>
                 <span className="text-blue-400 font-medium">Lunch Hour:</span>
                 <br />
-                Wed 12:00 PM - 2:00 PM
+                Daily 12:45 PM - 1:45 PM
               </li>
               <li>
-                <span className="text-blue-400 font-medium">Take It By Force:</span>
+                <span className="text-blue-400 font-medium">Communion Service:</span>
                 <br />
-                Fri 7:00 PM - 9:00 PM
+                Thu 5:30 PM - 7:30 PM
               </li>
             </ul>
           </div>

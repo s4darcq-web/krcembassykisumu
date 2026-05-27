@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 import { motion } from "framer-motion";
 import { Calendar, Clock, MapPin, Users, ArrowRight } from "lucide-react";
 import { ImageWithFallback } from "@/components/ImageWithFallback";
@@ -9,12 +11,13 @@ export default function EventsPage() {
     {
       title: "Sunday Main Service",
       date: "May 3, 2026",
-      time: "9:30 AM - 2:00 PM",
+      time: "9:00 AM - 2:00 PM",
       location: "Ofafa Hall, Kisumu",
       image:"images/mainservice.jpg",
       type: "Weekly Service",
       color: "from-yellow-500 to-orange-500",
       recurring: true,
+      recurrence: { freq: 'weekly', weekday: 0 },
     },
     {
       title: "Deliverance & Miracle Service",
@@ -51,6 +54,7 @@ export default function EventsPage() {
       type: "Weekly Service",
       color: "from-red-500 to-orange-500",
       recurring: true,
+      recurrence: { freq: 'weekly', weekday: 2 },
     },
     {
       title: "Family & Marriage Enrichment",
@@ -76,8 +80,139 @@ export default function EventsPage() {
       type: "Weekly Service",
       color: "from-blue-500 to-cyan-500",
       recurring: true,
+      recurrence: { freq: 'daily' },
+    },
+    {
+      title: "Pre-Anniversary Celebrations",
+      date: "August 2026",
+      time: "6:00 PM - 9:00 PM",
+      location: "Ofafa Hall, Kisumu",
+      description: "Pre-anniversary praise and worship leading into our main anniversary events.",
+      image: "/images/pre-anniversary.jpg",
+      type: "Special Event",
+      color: "from-yellow-500 to-amber-500",
+    },
+    {
+      title: "Anniversary Celebration",
+      date: "November 2026",
+      time: "9:00 AM - 2:00 PM",
+      location: "Ofafa Hall, Kisumu",
+      description: "Join us as we celebrate another year of God's faithfulness.",
+      image: "/images/anniversary.jpg",
+      type: "Special Event",
+      color: "from-red-500 to-pink-500",
+    },
+    {
+      title: "Family Banquet",
+      date: "December 2026",
+      time: "6:00 PM - 10:00 PM",
+      location: "Ofafa Hall, Kisumu",
+      description: "A night of fellowship, food, and family celebrations.",
+      image: "/images/family-banquet.jpg",
+      type: "Special Event",
+      color: "from-green-500 to-teal-500",
     },
   ];
+
+  const OFAFA_MAP_URL = "https://mapy.com/en/turisticka?source=osm&id=1171287685&x=34.7650442&y=-0.0951400&z=17";
+
+  // --- Filter helpers: parse dates and split upcoming vs past ---
+  function parseEventStartDate(dateStr: string): number | null {
+    if (!dateStr) return null;
+    const yearMatch = dateStr.match(/(20\d{2})/);
+    const year = yearMatch ? yearMatch[1] : new Date().getFullYear().toString();
+    const monthDayMatch = dateStr.match(/([A-Za-z]+\s\d{1,2})/);
+    if (monthDayMatch) {
+      const candidate = `${monthDayMatch[1]}, ${year}`;
+      const parsed = Date.parse(candidate);
+      if (!isNaN(parsed)) return parsed;
+    }
+    const monthYearMatch = dateStr.match(/([A-Za-z]+)\s+(20\d{2})/);
+    if (monthYearMatch) {
+      const candidate = `1 ${monthYearMatch[1]} ${monthYearMatch[2]}`;
+      const parsed = Date.parse(candidate);
+      if (!isNaN(parsed)) return parsed;
+    }
+    const parsed = Date.parse(dateStr);
+    return isNaN(parsed) ? null : parsed;
+  }
+
+  const [filter, setFilter] = useState<'upcoming' | 'past'>('upcoming');
+
+  // Helper: parse start time from a range like "9:00 AM - 2:00 PM"
+  function parseStartTime(timeRange: string) {
+    if (!timeRange) return null;
+    const m = timeRange.match(/(\d{1,2}:\d{2}\s*(AM|PM))/i);
+    return m ? m[1] : null;
+  }
+
+  function parseTimeToParts(t: string) {
+    const m = t.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
+    if (!m) return null;
+    let hh = parseInt(m[1], 10);
+    const mm = parseInt(m[2], 10);
+    const ampm = (m[3] || '').toUpperCase();
+    if (ampm === 'PM' && hh !== 12) hh += 12;
+    if (ampm === 'AM' && hh === 12) hh = 0;
+    return { hh, mm };
+  }
+
+  function combineDateAndTime(date: Date, timeStr?: string) {
+    const parts = timeStr ? parseTimeToParts(timeStr) : null;
+    const d = new Date(date);
+    if (parts) {
+      d.setHours(parts.hh, parts.mm, 0, 0);
+    } else {
+      d.setHours(0, 0, 0, 0);
+    }
+    return d;
+  }
+
+  function getNextOccurrence(ev: any): Date | null {
+    if (!ev.recurrence) return null;
+    const now = new Date();
+    const startTimeStr = parseStartTime(ev.time) || undefined;
+
+    if (ev.recurrence.freq === 'daily') {
+      // today at time if later, else tomorrow
+      const todayWithTime = combineDateAndTime(now, startTimeStr);
+      if (todayWithTime.getTime() > now.getTime()) return todayWithTime;
+      const tomorrow = new Date(now);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      return combineDateAndTime(tomorrow, startTimeStr);
+    }
+
+    if (ev.recurrence.freq === 'weekly') {
+      const targetDow = ev.recurrence.weekday; // 0=Sunday
+      const todayDow = now.getDay();
+      let daysAhead = (targetDow - todayDow + 7) % 7;
+      const candidate = new Date(now);
+      candidate.setDate(candidate.getDate() + daysAhead);
+      const candidateWithTime = combineDateAndTime(candidate, startTimeStr);
+      if (candidateWithTime.getTime() > now.getTime()) return candidateWithTime;
+      // otherwise next week
+      candidate.setDate(candidate.getDate() + 7);
+      return combineDateAndTime(candidate, startTimeStr);
+    }
+
+    return null;
+  }
+
+  const withTimestamps = upcomingEvents.map((ev) => {
+    const next = getNextOccurrence(ev);
+    if (next) {
+      const display = next.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+      return { ...ev, _time: next.getTime(), _displayDate: display, _isRecurring: true };
+    }
+    return { ...ev, _time: parseEventStartDate(ev.date) || 0, _displayDate: ev.date, _isRecurring: false };
+  });
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const upcomingList = withTimestamps.filter((e) => e._time >= today.getTime()).sort((a, b) => a._time - b._time);
+  // Past list should exclude recurring events (they always roll forward)
+  const pastList = withTimestamps.filter((e) => !e._isRecurring && e._time < today.getTime()).sort((a, b) => b._time - a._time);
+  const eventsToShow = filter === 'upcoming' ? upcomingList : pastList;
 
   return (
     <div className="min-h-screen pt-20">
@@ -117,12 +252,12 @@ export default function EventsPage() {
               {
                 title: "Sunday Main Service",
                 subtitle: "Sunday",
-                time: "9:30 AM - 2:00 PM",
+                time: "9:00 AM - 2:00 PM",
                 color: "from-yellow-500 to-orange-500",
               },
               {
                 title: "Lunch Hour Service",
-                subtitle: "Monday - Friday",
+                subtitle: "Daily",
                 time: "12:45 PM - 1:45 PM",
                 color: "from-blue-500 to-cyan-500",
               },
@@ -171,20 +306,37 @@ export default function EventsPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="text-center mb-16"
+            className="mb-16 flex flex-col md:flex-row md:items-center md:justify-between gap-4"
           >
-            <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-6">
-              Upcoming Events
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Mark your calendar and join us for these powerful gatherings
-            </p>
+            <div className="text-center md:text-left">
+              <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">Upcoming Events</h2>
+              <p className="text-xl text-gray-600 max-w-3xl">Mark your calendar and join us for these powerful gatherings</p>
+            </div>
+
+            <div className="flex items-center gap-3 justify-center md:justify-end">
+              <button
+                onClick={() => setFilter('upcoming')}
+                className={`px-4 py-2 rounded-full transition-all ${filter === 'upcoming' ? 'bg-white text-gray-900' : 'bg-white/10 text-gray-700'}`}
+              >
+                Upcoming
+              </button>
+              <button
+                onClick={() => setFilter('past')}
+                className={`px-4 py-2 rounded-full transition-all ${filter === 'past' ? 'bg-white text-gray-900' : 'bg-white/10 text-gray-700'}`}
+              >
+                Past
+              </button>
+            </div>
           </motion.div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {upcomingEvents.map((event, index) => (
+            {eventsToShow.length === 0 && (
+              <div className="col-span-1 lg:col-span-2 text-center text-gray-500 py-12">No events to show.</div>
+            )}
+
+            {eventsToShow.length > 0 && eventsToShow.map((event, index) => (
               <motion.div
-                key={`${event.title}-${event.date}`}
+                key={`${event.title}-${event._time}`}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -228,8 +380,8 @@ export default function EventsPage() {
 
                   <div className="space-y-3 mb-6">
                     <div className="flex items-center gap-3 text-gray-600">
-                      <Calendar className="w-5 h-5 text-red-600 shrink-0" />
-                      <span>{event.date}</span>
+                        <Calendar className="w-5 h-5 text-red-600 shrink-0" />
+                        <span>{event._displayDate ?? event.date}</span>
                     </div>
                     <div className="flex items-center gap-3 text-gray-600">
                       <Clock className="w-5 h-5 text-blue-600 shrink-0" />
@@ -346,13 +498,16 @@ export default function EventsPage() {
               transition={{ duration: 0.8 }}
               className="relative rounded-3xl overflow-hidden shadow-2xl h-[500px] bg-gray-200"
             >
-              {/* Placeholder for map */}
-              <div className="absolute inset-0 flex items-center justify-center bg-linear-to-br from-blue-100 to-green-100">
-                <div className="text-center">
-                  <MapPin className="w-24 h-24 text-red-600 mx-auto mb-4" />
-                  <p className="text-xl font-semibold text-gray-800">Ofafa Hall, Kisumu</p>
-                  <p className="text-gray-600">Interactive Map</p>
-                </div>
+              <a href={OFAFA_MAP_URL} target="_blank" rel="noopener noreferrer" className="absolute inset-0 block">
+                <iframe
+                  src={OFAFA_MAP_URL}
+                  loading="lazy"
+                  title="Ofafa Hall interactive map"
+                  className="w-full h-full border-0"
+                />
+              </a>
+              <div className="absolute bottom-4 left-4 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-lg text-sm">
+                Open interactive map for directions
               </div>
             </motion.div>
           </div>
